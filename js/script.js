@@ -82,7 +82,7 @@ $(document).ready(function () {
             const newNode = JSON.parse(response);
             const parentNode = $(`[data-id=${parentId}]`);
             const childrenContainer = parentNode.children('.children');
-            const nodeName = parentNode.find('.node-label').text();
+            const nodeName = parentNode.find('.node-label').first().text();
             const childName = nodeName + ' ' + (childrenContainer.children('.node').length + 1); // Создаем имя для дочернего узла
             const nodeElement = createNodeElement(newNode.id, childName, newNode.hasChildren, newNode.expanded);
             childrenContainer.append(nodeElement);
