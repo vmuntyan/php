@@ -15,7 +15,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.delete-node', function () {
         const nodeId = $(this).closest('.node').data('id');
-        $('#popup-message').text('Are you sure you want to delete this node?');
+        $('#popup-message').text('This is very dangerous, you shouldn`t do it! Are you really really sure?');
         $('#confirmation-popup').modal('show').data('id', nodeId);
         startCountdown(20);
     });
