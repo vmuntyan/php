@@ -27,8 +27,8 @@ $(document).ready(function () {
     $(document).on('click', '.edit-node', function () {
         const nodeId = $(this).closest('.node').data('id');
         const node = $(`[data-id=${nodeId}]`);
-        const label = node.find('.node-label');
-        const editor = node.find('.node-editor');
+        const label = node.find('.node-label').first();
+        const editor = node.find('.node-editor').first();
 
         label.hide();
         editor.show().find('input').focus().val(label.text());
@@ -37,7 +37,7 @@ $(document).ready(function () {
     $(document).on('click', '.save-edit', function () {
         const nodeId = $(this).closest('.node').data('id');
         const editor = $(this).closest('.node-editor');
-        const newName = editor.find('input').val();
+        const newName = editor.find('input').first().val();
         const label = editor.siblings('.node-label');
 
         if (newName !== '') {
