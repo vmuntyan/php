@@ -8,6 +8,7 @@ $(document).ready(function () {
             const root = JSON.parse(response);
             $('#tree-container').append(createNodeElement(root.id, 'root'));
         });
+        $('#create-root').hide();
     });
 
     $(document).on('click', '.add-node', function () {
@@ -174,6 +175,9 @@ $(document).ready(function () {
     function deleteNode(nodeId) {
         $.post('php/nodes.php', { action: 'delete_node', id: nodeId }, function () {
             $(`[data-id=${nodeId}]`).remove();
+            if ($(".node").length == 0) {
+                $('#create-root').show();
+            }
         });
     }
 
