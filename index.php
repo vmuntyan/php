@@ -9,7 +9,7 @@
 <body>
     <div class="container mt-5">
         <div id="tree-container">
-            <button id="create-root" class="btn btn-primary">Create Root</button>
+            <button id="create-root" class="btn btn-primary" style="display: none;">Create Root</button>
         </div>
     </div>
 

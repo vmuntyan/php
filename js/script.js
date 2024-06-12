@@ -58,6 +58,7 @@ $(document).ready(function () {
 
         editor.hide();
         label.show();
+     
     });
 
     $(document).on('click', '.cancel-edit', function () {
@@ -150,6 +151,12 @@ $(document).ready(function () {
             };
 
             buildTree(null, $('#tree-container'));
+
+            if ($(".node").length == 0) {
+                $('#create-root').show();
+            } else {
+                $('#create-root').hide();
+            }
         });
     }
 
