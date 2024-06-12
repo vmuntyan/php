@@ -92,6 +92,21 @@ $(document).ready(function() {
                 </div>`;
     }
     
+    function updateExpandButtons() {
+        $('.node').each(function() {
+            const children = $(this).children('.children');
+            const expandButton = $(this).find('.expand-node');
+            if (children.children().length > 0) {
+                expandButton.show();
+                const isExpanded = children.is(':visible');
+                expandButton.toggleClass('expanded', isExpanded);
+                expandButton.html(isExpanded ? '▼' : '►');
+            } else {
+                expandButton.hide();
+            }
+        });
+    }
+    
 
     function loadTree() {
         $.post('php/nodes.php', { action: 'get_nodes' }, function(response) {
@@ -112,10 +127,9 @@ $(document).ready(function() {
             };
     
             buildTree(null, $('#tree-container'));
-            updateExpandButtons();
+            updateExpandButtons(); // Обновляем состояние кнопок развертывания
         });
     }
-
     function startCountdown(seconds) {
         let timer = seconds;
         $('#popup-timer').text(`Time Left: ${timer}s`);
