@@ -46,7 +46,13 @@ switch ($action) {
         }
         break;
     case 'delete_node':
-        // Реализация удаления узла
+        if (isset($_POST['id'])) {
+            $id = $_POST['id'];
+            deleteNodeAndChildren($conn, $id);
+            echo "The node and all its child nodes were successfully deleted";
+        } else {
+            echo "Node ID was not sent";
+        }
         break;
     case 'get_nodes':
         $nodes = [];
@@ -70,4 +76,13 @@ function updateParentHasChildren($parentId, $hasChildren) {
     $sql = "UPDATE nodes SET has_children=$hasChildren WHERE id=$parentId";
     $conn->query($sql);
 }
+
+function deleteNodeAndChildren($conn, $nodeId) {
+    $sql = "DELETE FROM nodes WHERE parent_id = $nodeId";
+    $conn->query($sql);
+
+    $sql = "DELETE FROM nodes WHERE id = $nodeId";
+    $conn->query($sql);
+}
+
 ?>

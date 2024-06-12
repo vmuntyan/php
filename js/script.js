@@ -1,3 +1,5 @@
+const interval = 0;
+
 $(document).ready(function () {
     loadTree();
 
@@ -10,18 +12,25 @@ $(document).ready(function () {
 
     $(document).on('click', '.add-node', function () {
         const parentId = $(this).closest('.node').data('id');
-        addNode(parentId);
+        addChildNode(parentId);
     });
 
     $(document).on('click', '.delete-node', function () {
         const nodeId = $(this).closest('.node').data('id');
         $('#popup-message').text('This is very dangerous, you shouldn`t do it! Are you really really sure?');
         $('#confirmation-popup').modal('show').data('id', nodeId);
-        startCountdown(20);
+        startCountdown(20, nodeId);
     });
 
-    $('#confirm-delete, #cancel-delete').on('click', function () {
+    $('#cancel-delete').on('click', function () {
         stopCountdown();
+        $('#confirmation-popup').modal('hide');
+    });
+
+    $('#confirm-delete').on('click', function () {
+        stopCountdown();
+        deleteNode($('#confirmation-popup').data('id'));
+        $('#confirmation-popup').modal('hide');
     });
 
     $(document).on('click', '.edit-node', function () {
@@ -68,21 +77,24 @@ $(document).ready(function () {
 
     });
 
-    function addNode(parentId) {
+    function addChildNode(parentId) {
         $.post('php/nodes.php', { action: 'add_node', parent_id: parentId }, function (response) {
             const newNode = JSON.parse(response);
             const parentNode = $(`[data-id=${parentId}]`);
             const childrenContainer = parentNode.children('.children');
-            const nodeElement = createNodeElement(newNode.id, newNode.name, newNode.hasChildren, newNode.expanded);
+            const nodeName = parentNode.find('.node-label').text();
+            const childName = nodeName + ' ' + (childrenContainer.children('.node').length + 1); // Создаем имя для дочернего узла
+            const nodeElement = createNodeElement(newNode.id, childName, newNode.hasChildren, newNode.expanded);
             childrenContainer.append(nodeElement);
-            const expandButton = parentNode.find('.expand-node');
-            if (!expandButton.length) {
-                parentNode.prepend('<button class="expand-node btn btn-secondary">►</button>');
+            if (newNode.hasChildren) {
+                const expandButton = parentNode.find('.expand-node');
+                if (!expandButton.length) {
+                    parentNode.prepend('<button class="expand-node btn btn-secondary">►</button>');
+                }
             }
             updateExpandButtons();
         });
     }
-
 
     function createNodeElement(id, name, hasChildren, expanded) {
         return `<div class="node" data-id="${id}">
@@ -142,13 +154,14 @@ $(document).ready(function () {
         });
     }
 
-    function startCountdown(seconds) {
+    function startCountdown(seconds, nodeId) {
         let timer = seconds;
         $('#popup-timer').text(`Time Left: ${timer}s`);
-        const interval = setInterval(function () {
+        interval = setInterval(function () {
             timer--;
             $('#popup-timer').text(`Time Left: ${timer}s`);
             if (timer <= 0) {
+                deleteNode(nodeId);
                 clearInterval(interval);
                 $('#confirmation-popup').modal('hide');
             }
@@ -159,4 +172,11 @@ $(document).ready(function () {
         $('#popup-timer').text('');
         clearInterval(interval);
     }
+
+    function deleteNode(nodeId) {
+        $.post('php/nodes.php', { action: 'delete_node', id: nodeId }, function () {
+            $(`[data-id=${nodeId}]`).remove();
+        });
+    }
+
 });
