@@ -18,10 +18,11 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <p id="popup-message"></p>
+                    <p id="popup-timer" class="float-left">Time Left: 20s</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" id="confirm-delete">Yes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-delete" data-dismiss="modal">No</button>
                 </div>
             </div>
         </div>

@@ -21,14 +21,11 @@ $(document).ready(function() {
         const nodeId = $(this).closest('.node').data('id');
         $('#popup-message').text('Are you sure you want to delete this node?');
         $('#confirmation-popup').modal('show').data('id', nodeId);
+        startCountdown(20);
     });
 
-    $('#confirm-delete').on('click', function() {
-        const nodeId = $('#confirmation-popup').data('id');
-        $.post('php/nodes.php', { action: 'delete_node', id: nodeId }, function() {
-            $(`[data-id=${nodeId}]`).remove();
-            $('#confirmation-popup').modal('hide');
-        });
+    $('#confirm-delete, #cancel-delete').on('click', function() {
+        stopCountdown();
     });
 
     $(document).on('click', '.edit-node', function() {
@@ -65,6 +62,14 @@ $(document).ready(function() {
         label.show();
     });
 
+    $(document).on('click', '.expand-node', function() {
+        const node = $(this).closest('.node');
+        const children = node.children('.children');
+        const isExpanded = children.is(':visible');
+        children.toggle(!isExpanded);
+        $(this).toggleClass('expanded', !isExpanded);
+    });
+
     function createNodeElement(id, name) {
         return `<div class="node" data-id="${id}">
                     <span class="node-label">${name}</span>
@@ -77,7 +82,9 @@ $(document).ready(function() {
                         <button class="add-node btn btn-success">+</button>
                         <button class="delete-node btn btn-danger">-</button>
                         <button class="edit-node btn btn-info">Edit</button>
+                        <button class="expand-node btn btn-secondary">►</button>
                     </span>
+                    <div class="children"></div>
                 </div>`;
     }
 
@@ -93,11 +100,29 @@ $(document).ready(function() {
                 nodes.filter(node => node.parent_id == parentId).forEach(node => {
                     const nodeElement = createNodeElement(node.id, node.name);
                     container.append(nodeElement);
-                    buildTree(node.id, $(`[data-id=${node.id}]`));
+                    buildTree(node.id, $(`[data-id=${node.id}] .children`));
                 });
             };
 
             buildTree(null, $('#tree-container'));
         });
+    }
+
+    function startCountdown(seconds) {
+        let timer = seconds;
+        $('#popup-timer').text(`Time Left: ${timer}s`);
+        const interval = setInterval(function() {
+            timer--;
+            $('#popup-timer').text(`Time Left: ${timer}s`);
+            if (timer <= 0) {
+                clearInterval(interval);
+                $('#confirmation-popup').modal('hide');
+            }
+        }, 1000);
+    }
+
+    function stopCountdown() {
+        $('#popup-timer').text('');
+        clearInterval(interval);
     }
 });

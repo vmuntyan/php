@@ -24,3 +24,8 @@
 .node-editor .btn {
    margin-left: 5px;
 }
+
+.expand-node {
+   margin-right: 5px;
+   cursor: pointer;
+}
