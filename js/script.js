@@ -72,11 +72,11 @@ $(document).ready(function() {
 
     });
 
-    function createNodeElement(id, name) {
+    function createNodeElement(id, name, hasChildren, expanded) {
         return `<div class="node" data-id="${id}">
-                    <span class="actions">
-                        <button class="expand-node btn btn-secondary">►</button>
-                    </span>
+                    ${hasChildren ? `<span class="actions">
+                        <button class="expand-node btn btn-secondary ${expanded ? 'expanded' : ''}">${expanded ? '▼' : '►'}</button>
+                    </span>` : ''}
                     <span class="node-label">${name}</span>
                     <span class="node-editor">
                         <input type="text" class="form-control" value="${name}" />
@@ -100,16 +100,19 @@ $(document).ready(function() {
             nodes.forEach(node => {
                 nodesById[node.id] = node;
             });
-
+    
             const buildTree = (parentId, container) => {
                 nodes.filter(node => node.parent_id == parentId).forEach(node => {
-                    const nodeElement = createNodeElement(node.id, node.name);
+                    const nodeElement = createNodeElement(node.id, node.name, node.has_children, node.expanded);
                     container.append(nodeElement);
-                    buildTree(node.id, $(`[data-id=${node.id}] .children`));
+                    if (node.has_children && node.expanded) {
+                        buildTree(node.id, $(`[data-id=${node.id}] .children`));
+                    }
                 });
             };
-
+    
             buildTree(null, $('#tree-container'));
+            updateExpandButtons();
         });
     }
 

@@ -1,39 +1,73 @@
 <?php
-include 'db.php';
+// Подключение к базе данных
+$dbHost = 'localhost';
+$dbUsername = 'root';
+$dbPassword = '88888888';
+$dbName = 'tree_nodes';
+
+$conn = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
+
+// Проверка соединения
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 $action = $_POST['action'];
 
 switch ($action) {
     case 'create_root':
-        $stmt = $conn->prepare("INSERT INTO nodes (name) VALUES ('root')");
-        $stmt->execute();
-        echo json_encode(["id" => $conn->lastInsertId()]);
+        $sql = "INSERT INTO nodes (name, parent_id) VALUES ('root', NULL)";
+        if ($conn->query($sql) === TRUE) {
+            $nodeId = $conn->insert_id;
+            echo json_encode(['id' => $nodeId, 'name' => 'root', 'hasChildren' => false, 'expanded' => false]);
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
         break;
-
     case 'add_node':
-        $parent_id = $_POST['parent_id'];
-        $stmt = $conn->prepare("INSERT INTO nodes (name, parent_id) VALUES ('node', ?)");
-        $stmt->execute([$parent_id]);
-        echo json_encode(["id" => $conn->lastInsertId()]);
+        $parentId = $_POST['parent_id'];
+        $sql = "INSERT INTO nodes (name, parent_id) VALUES ('node', $parentId)";
+        if ($conn->query($sql) === TRUE) {
+            $nodeId = $conn->insert_id;
+            updateParentHasChildren($parentId, true);
+            echo json_encode(['id' => $nodeId, 'name' => 'node', 'hasChildren' => false, 'expanded' => false]);
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
         break;
-
-    case 'delete_node':
-        $id = $_POST['id'];
-        $stmt = $conn->prepare("DELETE FROM nodes WHERE id = ? OR parent_id = ?");
-        $stmt->execute([$id, $id]);
-        break;
-
     case 'edit_node':
-        $id = $_POST['id'];
-        $name = $_POST['name'];
-        $stmt = $conn->prepare("UPDATE nodes SET name = ? WHERE id = ?");
-        $stmt->execute([$name, $id]);
+        $nodeId = $_POST['id'];
+        $newName = $_POST['name'];
+        $sql = "UPDATE nodes SET name='$newName' WHERE id=$nodeId";
+        if ($conn->query($sql) === TRUE) {
+            echo "Record updated successfully";
+        } else {
+            echo "Error updating record: " . $conn->error;
+        }
         break;
-
+    case 'delete_node':
+        // Реализация удаления узла
+        break;
     case 'get_nodes':
-        $stmt = $conn->query("SELECT * FROM nodes");
-        $nodes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($nodes);
+        $nodes = [];
+        $sql = "SELECT * FROM nodes";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                $nodes[] = $row;
+            }
+            echo json_encode($nodes);
+        } else {
+            echo "0 results";
+        }
         break;
+}
+
+$conn->close();
+
+function updateParentHasChildren($parentId, $hasChildren) {
+    global $conn;
+    $sql = "UPDATE nodes SET has_children=$hasChildren WHERE id=$parentId";
+    $conn->query($sql);
 }
 ?>
