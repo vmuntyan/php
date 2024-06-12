@@ -1,4 +1,4 @@
-const interval = 0;
+var interval = Object;
 
 $(document).ready(function () {
     loadTree();
@@ -86,11 +86,9 @@ $(document).ready(function () {
             const childName = nodeName + ' ' + (childrenContainer.children('.node').length + 1); // Создаем имя для дочернего узла
             const nodeElement = createNodeElement(newNode.id, childName, newNode.hasChildren, newNode.expanded);
             childrenContainer.append(nodeElement);
-            if (newNode.hasChildren) {
-                const expandButton = parentNode.find('.expand-node');
-                if (!expandButton.length) {
-                    parentNode.prepend('<button class="expand-node btn btn-secondary">►</button>');
-                }
+            const expandButton = parentNode.find('.expand-node');
+            if (!expandButton.length) {
+                parentNode.prepend('<button class="expand-node btn">►</button>');
             }
             updateExpandButtons();
         });
