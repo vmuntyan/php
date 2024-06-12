@@ -26,6 +26,7 @@
 }
 
 .expand-node {
-   margin-right: 5px;
    cursor: pointer;
+   height: 20px;
+   width: 10px;
 }

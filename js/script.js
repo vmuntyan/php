@@ -72,6 +72,9 @@ $(document).ready(function() {
 
     function createNodeElement(id, name) {
         return `<div class="node" data-id="${id}">
+                    <span class="actions">
+                        <button class="expand-node btn btn-secondary">►</button>
+                    </span>
                     <span class="node-label">${name}</span>
                     <span class="node-editor">
                         <input type="text" class="form-control" value="${name}" />
@@ -82,11 +85,11 @@ $(document).ready(function() {
                         <button class="add-node btn btn-success">+</button>
                         <button class="delete-node btn btn-danger">-</button>
                         <button class="edit-node btn btn-info">Edit</button>
-                        <button class="expand-node btn btn-secondary">►</button>
                     </span>
                     <div class="children"></div>
                 </div>`;
     }
+    
 
     function loadTree() {
         $.post('php/nodes.php', { action: 'get_nodes' }, function(response) {
