@@ -1,0 +1,26 @@
+.node {
+   margin: 4px 20px;
+}
+
+.actions {
+   display: inline;
+   margin-left: 10px;
+}
+
+.node-label {
+   display: inline;
+   cursor: pointer;
+}
+
+.node-editor {
+   display: none;
+}
+
+.node-editor input {
+   display: inline;
+   width: auto;
+}
+
+.node-editor .btn {
+   margin-left: 5px;
+}
