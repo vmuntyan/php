@@ -10,11 +10,7 @@ $(document).ready(function() {
 
     $(document).on('click', '.add-node', function() {
         const parentId = $(this).closest('.node').data('id');
-        $.post('php/nodes.php', { action: 'add_node', parent_id: parentId }, function(response) {
-            const node = JSON.parse(response);
-            const newNode = createNodeElement(node.id, 'node');
-            $(`[data-id=${parentId}]`).append(newNode);
-        });
+        addNode(parentId);
     });
 
     $(document).on('click', '.delete-node', function() {
@@ -72,6 +68,24 @@ $(document).ready(function() {
 
     });
 
+    function addNode(parentId) {
+        $.post('php/nodes.php', { action: 'add_node', parent_id: parentId }, function(response) {
+            const newNode = JSON.parse(response);
+            const parentNode = $(`[data-id=${parentId}]`);
+            const childrenContainer = parentNode.children('.children');
+            const nodeElement = createNodeElement(newNode.id, newNode.name, newNode.hasChildren, newNode.expanded);
+            childrenContainer.append(nodeElement);
+            if (newNode.hasChildren) {
+                const expandButton = parentNode.find('.expand-node');
+                if (!expandButton.length) {
+                    parentNode.prepend('<button class="expand-node btn btn-secondary">►</button>');
+                }
+            }
+            updateExpandButtons();
+        });
+    }
+    
+
     function createNodeElement(id, name, hasChildren, expanded) {
         return `<div class="node" data-id="${id}">
                     ${hasChildren ? `<span class="actions">
@@ -96,13 +110,12 @@ $(document).ready(function() {
         $('.node').each(function() {
             const children = $(this).children('.children');
             const expandButton = $(this).find('.expand-node');
-            if (children.children().length > 0) {
-                expandButton.show();
+            const hasChildren = children.children().length > 0;
+            expandButton.toggle(hasChildren);
+            if (hasChildren) {
                 const isExpanded = children.is(':visible');
                 expandButton.toggleClass('expanded', isExpanded);
                 expandButton.html(isExpanded ? '▼' : '►');
-            } else {
-                expandButton.hide();
             }
         });
     }
@@ -124,12 +137,13 @@ $(document).ready(function() {
                         buildTree(node.id, $(`[data-id=${node.id}] .children`));
                     }
                 });
+                updateExpandButtons(); // Обновляем состояние кнопок развертывания после построения дерева
             };
     
             buildTree(null, $('#tree-container'));
-            updateExpandButtons(); // Обновляем состояние кнопок развертывания
         });
     }
+    
     function startCountdown(seconds) {
         let timer = seconds;
         $('#popup-timer').text(`Time Left: ${timer}s`);
