@@ -68,6 +68,8 @@ $(document).ready(function() {
         const isExpanded = children.is(':visible');
         children.toggle(!isExpanded);
         $(this).toggleClass('expanded', !isExpanded);
+        $(this).html(isExpanded ? '►' : '▼');
+
     });
 
     function createNodeElement(id, name) {
