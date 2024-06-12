@@ -27,4 +27,6 @@
 
 .expand-node {
    cursor: pointer;
+   background-color: white; /* белый фон */
+   color: black; /* черный цвет значка */
 }

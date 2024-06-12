@@ -87,7 +87,7 @@ $(document).ready(function () {
     function createNodeElement(id, name, hasChildren, expanded) {
         return `<div class="node" data-id="${id}">
                     ${hasChildren ? `<span class="actions">
-                        <button class="expand-node btn btn-secondary ${expanded ? 'expanded' : ''}">${expanded ? '▼' : '►'}</button>
+                        <button class="expand-node btn ${expanded ? 'expanded' : ''}">${expanded ? '▼' : '►'}</button>
                     </span>` : ''}
                     <span class="node-label">${name}</span>
                     <span class="node-editor">
