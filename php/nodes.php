@@ -1,5 +1,5 @@
 <?php
-// Подключение к базе данных
+
 $dbHost = 'localhost';
 $dbUsername = 'root';
 $dbPassword = '88888888';
@@ -7,7 +7,6 @@ $dbName = 'tree_nodes';
 
 $conn = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
 
-// Проверка соединения
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -26,11 +25,12 @@ switch ($action) {
         break;
     case 'add_node':
         $parentId = $_POST['parent_id'];
-        $sql = "INSERT INTO nodes (name, parent_id) VALUES ('node', $parentId)";
+        $nameNode = $_POST['name_node'] ?? 'node';
+        $sql = "INSERT INTO nodes (name, parent_id) VALUES ('$nameNode', $parentId)";
         if ($conn->query($sql) === TRUE) {
             $nodeId = $conn->insert_id;
             updateParentHasChildren($parentId, true);
-            echo json_encode(['id' => $nodeId, 'name' => 'node', 'hasChildren' => false, 'expanded' => false]);
+            echo json_encode(['id' => $nodeId, 'name' => $nameNode, 'hasChildren' => false, 'expanded' => false]);
         } else {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }

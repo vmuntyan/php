@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container main-tree">
         <div id="tree-container">
             <button id="create-root" class="btn btn-primary" style="display: none;">Create Root</button>
         </div>

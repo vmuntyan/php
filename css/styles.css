@@ -30,3 +30,7 @@
    background-color: white; /* белый фон */
    color: black; /* черный цвет значка */
 }
+
+.main-tree{
+   margin-left: 0%;
+}

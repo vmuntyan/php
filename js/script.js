@@ -50,15 +50,11 @@ $(document).ready(function () {
         const newName = editor.find('input').first().val();
         const label = editor.siblings('.node-label');
 
-        if (newName !== '') {
-            $.post('php/nodes.php', { action: 'edit_node', id: nodeId, name: newName }, function () {
-                label.text(newName);
-            });
-        }
+        saveName(nodeId, newName, () => { label.text(newName); });
 
         editor.hide();
         label.show();
-     
+
     });
 
     $(document).on('click', '.cancel-edit', function () {
@@ -79,14 +75,23 @@ $(document).ready(function () {
 
     });
 
+    function saveName(nodeId, newName, callBack) {
+        if (newName !== '') {
+            $.post('php/nodes.php', { action: 'edit_node', id: nodeId, name: newName }, function () {
+                callBack();
+            });
+        }
+    }
+
     function addChildNode(parentId) {
-        $.post('php/nodes.php', { action: 'add_node', parent_id: parentId }, function (response) {
+        const parentNode = $(`[data-id=${parentId}]`);
+        const nodeName = parentNode.find('.node-label').first().text();
+        const childrenContainer = parentNode.children('.children');
+        const childName = nodeName + ' ' + (childrenContainer.children('.node').length + 1);
+
+        $.post('php/nodes.php', { action: 'add_node', parent_id: parentId, name_node: childName }, function (response) {
             const newNode = JSON.parse(response);
-            const parentNode = $(`[data-id=${parentId}]`);
-            const childrenContainer = parentNode.children('.children');
-            const nodeName = parentNode.find('.node-label').first().text();
-            const childName = nodeName + ' ' + (childrenContainer.children('.node').length + 1); // Создаем имя для дочернего узла
-            const nodeElement = createNodeElement(newNode.id, childName, newNode.hasChildren, newNode.expanded);
+            const nodeElement = createNodeElement(newNode.id, newNode.name, newNode.hasChildren, newNode.expanded);
             childrenContainer.append(nodeElement);
             const expandButton = parentNode.find('.expand-node');
             if (!expandButton.length) {
@@ -147,7 +152,7 @@ $(document).ready(function () {
                         buildTree(node.id, $(`[data-id=${node.id}] .children`));
                     }
                 });
-                updateExpandButtons(); // Обновляем состояние кнопок развертывания после построения дерева
+                updateExpandButtons();
             };
 
             buildTree(null, $('#tree-container'));
